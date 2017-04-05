@@ -3,7 +3,9 @@
 
 int main(int argc, char **argv) {
     QApplication app(argc, argv);
+    LabApp *labApp = createLabApp();
+    labApp->show();
 
-    lab6();
+    app.exec();
     return 0;
 }

@@ -11,6 +11,7 @@ INCLUDE(${QT_USE_FILE})
 
 set(SOURCE_FILES
         opencv_app.cpp
+        project.cpp
         tools.cpp
         labs/lab1.cpp
         labs/lab2.cpp

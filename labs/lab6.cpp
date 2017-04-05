@@ -191,3 +191,18 @@ void lab6() {
     }
 }
 
+void lab6_contour_points() {
+    char *filename = open_file("lab6");
+    if (filename == NULL) {
+        return;
+    }
+
+    Mat source = cvLoadImage(filename, CV_8UC1);
+    Mat dest_contour = Mat::zeros(source.rows, source.cols, CV_8UC3);
+
+    std::vector<Point> contour = find_contour(source);
+    display_contour(dest_contour, contour);
+
+    imshow("source", source);
+    imshow("dest_contour", dest_contour);
+}
