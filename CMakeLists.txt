@@ -19,6 +19,7 @@ set(SOURCE_FILES
         labs/lab4.cpp
         labs/lab5.cpp
         labs/lab6.cpp
+        labs/lab7.cpp
         )
 
 add_executable(opencv_app ${SOURCE_FILES})

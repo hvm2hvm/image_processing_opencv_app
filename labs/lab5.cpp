@@ -3,9 +3,6 @@
 #include <queue>
 #include <unordered_map>
 
-#define VALUE_OBJECT 0
-#define VALUE_CANVAS 255
-
 #define LABEL_NOT_COMPUTED -1
 #define LABEL_NO_OBJECT 0
 #define LABEL_FIRST 1
@@ -53,7 +50,7 @@ std::vector<Point> getObjectNeighbors(Point point, Mat source) {
                 continue;
             }
             int ii = point.y + i, jj = point.x + j;
-            if (source.at<uchar>(ii, jj) == VALUE_OBJECT) {
+            if (source.at<uchar>(ii, jj) == COLOR_OBJECT) {
                 result.push_back(Point(jj, ii));
             }
         }
@@ -83,7 +80,7 @@ Mat labelObjectsBFS(Mat source) {
         for (int j = 0; j < source.cols; j++) {
             int value = source.at<uchar>(i, j);
             if (destination.at<int>(i, j) == LABEL_NOT_COMPUTED) {
-                if (value == VALUE_OBJECT) {
+                if (value == COLOR_OBJECT) {
                     int currentLabel = nextLabel++;
                     destination.at<int>(i, j) = currentLabel;
                     printf("found at (%d, %d), object: %d\n", i, j, currentLabel);
@@ -98,7 +95,7 @@ Mat labelObjectsBFS(Mat source) {
 
                         for (int k = 0; k < neighbors.size(); k++) {
                             int nvalue = source.at<uchar>(neighbors[k].y, neighbors[k].x);
-                            if (nvalue == VALUE_OBJECT) {
+                            if (nvalue == COLOR_OBJECT) {
                                 // printf("  setting neighbor (%d,%d) as %d\n", neighbors[k].y, neighbors[k].x, currentLabel);
                                 destination.at<int>(neighbors[k].y, neighbors[k].x) = currentLabel;
                                 entries.push(neighbors[k]);
@@ -127,7 +124,7 @@ Mat labelObjectsMultipass(Mat source) {
                 i = i;
             }
             if (destination.at<int>(i, j) == LABEL_NOT_COMPUTED) {
-                if (value == VALUE_OBJECT) {
+                if (value == COLOR_OBJECT) {
                     std::vector<Point> neighbors = getValidNeighbors(Point(j, i), destination, true);
                     int currentLabel;
                     if (neighbors.size() > 0) {

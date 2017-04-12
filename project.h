@@ -16,6 +16,10 @@ using namespace cv;
 #include "labs/lab4.h"
 #include "labs/lab5.h"
 #include "labs/lab6.h"
+#include "labs/lab7.h"
+
+#define COLOR_CANVAS 255
+#define COLOR_OBJECT 0
 
 #define MAX_PATH 256
 
