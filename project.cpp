@@ -130,6 +130,8 @@ QList<Lab*> initialize_labs() {
                    ->addFilesDir("../../Images/lab8"))
          ->addTask((new Task("histogram sliding", &lab8_histogram_sliding))
                    ->addFilesDir("../../Images/lab8"))
+         ->addTask((new Task("gamma correction", &lab8_gamma_correction))
+                   ->addFilesDir("../../Images/lab8"))
     );
 
     return result;

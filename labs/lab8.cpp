@@ -145,6 +145,20 @@ Mat histogram_slide(Mat source, int delta) {
     return destination;
 }
 
+Mat gamma_correction(Mat source, float gamma) {
+    Mat destination(source.rows, source.cols, CV_8UC1);
+
+    for (int i = 0; i < source.rows; i++) {
+       for (int j = 0; j < source.cols; j++) {
+           int src = source.at<unsigned char>(i, j);
+           int dest = 255 * pow(1.0 * src / 255, gamma);
+           destination.at<unsigned char>(i, j) = bounded(dest);
+       }
+    }
+
+    return destination;
+}
+
 void lab8_histogram(char *filePath) {
     Mat source = imread(filePath, CV_8UC1);
 
@@ -186,4 +200,15 @@ void lab8_histogram_sliding(char *filePath) {
     display_histogram("source histogram", compute_histogram(source));
     imshow("histogram slided", destination);
     display_histogram("slided histogram", compute_histogram(destination));
+}
+
+void lab8_gamma_correction(char *filePath) {
+    Mat source = imread(filePath, CV_8UC1);
+
+    Mat destination = gamma_correction(source, 0.5);
+
+    imshow("source", source);
+    display_histogram("source histogram", compute_histogram(source));
+    imshow("gamma corrected", destination);
+    display_histogram("gamma corrected histogram", compute_histogram(destination));
 }
