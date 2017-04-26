@@ -104,6 +104,47 @@ Mat segment_with_threshold(Mat source) {
     return destination;
 }
 
+int compute_histogram_mean(std::vector<int> histogram) {
+    long result = 0, sum = 0;
+    for (int i=0; i<histogram.size(); i++) {
+        result += histogram[i] * i;
+        sum += histogram[i];
+    }
+    return result / sum;
+}
+
+Mat histogram_scale(Mat source, float scale) {
+    Mat destination(source.rows, source.cols, CV_8UC1);
+    float mean = compute_intensity_mean(source);
+    float deviation = compute_intensity_deviation(source);
+    int src_min = mean - deviation, src_max = mean + deviation;
+    int dest_min = mean - deviation * scale, dest_max = mean + deviation * scale;
+
+    for (int i = 0; i < source.rows; i++) {
+       for (int j = 0; j < source.cols; j++) {
+           int src = source.at<unsigned char>(i, j);
+           int dest = dest_min + (src - src_min) * (dest_max - dest_min) / (src_max - src_min);
+           dest = bounded(dest);
+           destination.at<unsigned char>(i, j) = dest;
+       }
+    }
+
+    return destination;
+}
+
+Mat histogram_slide(Mat source, int delta) {
+    Mat destination(source.rows, source.cols, CV_8UC1);
+
+    for (int i = 0; i < source.rows; i++) {
+       for (int j = 0; j < source.cols; j++) {
+           destination.at<unsigned char>(i, j) =
+                bounded(source.at<unsigned char>(i, j) + delta);
+       }
+    }
+
+    return destination;
+}
+
 void lab8_histogram(char *filePath) {
     Mat source = imread(filePath, CV_8UC1);
 
@@ -123,4 +164,15 @@ void lab8_threshold(char *filePath) {
 
     imshow("source", source);
     imshow("segmented", destination);
+}
+
+void lab8_histogram_transforms(char *filePath) {
+    Mat source = imread(filePath, CV_8UC1);
+
+    Mat destination = histogram_scale(source, 2);
+
+    imshow("source", source);
+    display_histogram("source histogram", compute_histogram(source));
+    imshow("histogram scaled", destination);
+    display_histogram("scaled histogram", compute_histogram(destination));
 }

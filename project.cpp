@@ -125,6 +125,8 @@ QList<Lab*> initialize_labs() {
                    ->addFilesDir("../../Images/lab8"))
          ->addTask((new Task("segment image", &lab8_threshold))
                    ->addFilesDir("../../Images/lab8"))
+         ->addTask((new Task("histogram transforms", &lab8_histogram_transforms))
+                   ->addFilesDir("../../Images/lab8"))
     );
 
     return result;
