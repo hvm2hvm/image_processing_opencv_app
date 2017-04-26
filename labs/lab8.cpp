@@ -159,6 +159,25 @@ Mat gamma_correction(Mat source, float gamma) {
     return destination;
 }
 
+Mat histogram_equalization(Mat source) {
+    Mat destination(source.rows, source.cols, CV_8UC1);
+//    std::vector<float> histogram = compute_normalized_histogram(source);
+//    std::vector<float> cumulative = compute_normalized_cumulative_histogram(histogram);
+    std::vector<int> histogram = compute_histogram(source);
+    std::vector<int> cumulative = compute_cumulative_histogram(histogram);
+    int pixel_count = source.rows * source.cols;
+
+    for (int i = 0; i < source.rows; i++) {
+       for (int j = 0; j < source.cols; j++) {
+           int src = source.at<unsigned char>(i, j);
+           int dest = 255 * cumulative[src] / pixel_count;
+           destination.at<unsigned char>(i, j) = bounded(dest);
+       }
+    }
+
+    return destination;
+}
+
 void lab8_histogram(char *filePath) {
     Mat source = imread(filePath, CV_8UC1);
 
@@ -211,4 +230,15 @@ void lab8_gamma_correction(char *filePath) {
     display_histogram("source histogram", compute_histogram(source));
     imshow("gamma corrected", destination);
     display_histogram("gamma corrected histogram", compute_histogram(destination));
+}
+
+void lab8_histogram_equalization(char *filePath) {
+    Mat source = imread(filePath, CV_8UC1);
+
+    Mat destination = histogram_equalization(source);
+
+    imshow("source", source);
+    display_histogram("source histogram", compute_histogram(source));
+    imshow("histogram equalized", destination);
+    display_histogram("equalized histogram", compute_histogram(destination));
 }
