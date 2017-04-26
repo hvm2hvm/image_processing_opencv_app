@@ -3,7 +3,7 @@
 
 #include "project.h"
 
-#include <qt4/QtGui/QFileDialog>
+#include <QFileDialog>
 
 unsigned char bounded(int value);
 

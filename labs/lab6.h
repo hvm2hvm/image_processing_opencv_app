@@ -3,7 +3,7 @@
 
 #include "../project.h"
 
-void lab6_contour_points();
+void lab6_contour_points(char *filePath);
 void lab6();
 
 #endif//LAB6_H
