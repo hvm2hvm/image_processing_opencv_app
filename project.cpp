@@ -123,6 +123,8 @@ QList<Lab*> initialize_labs() {
     result.push_back((new Lab("lab 8"))
          ->addTask((new Task("compute histogram", &lab8_histogram))
                    ->addFilesDir("../../Images/lab8"))
+         ->addTask((new Task("segment image", &lab8_threshold))
+                   ->addFilesDir("../../Images/lab8"))
     );
 
     return result;
