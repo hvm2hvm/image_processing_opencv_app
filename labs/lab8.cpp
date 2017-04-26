@@ -161,8 +161,6 @@ Mat gamma_correction(Mat source, float gamma) {
 
 Mat histogram_equalization(Mat source) {
     Mat destination(source.rows, source.cols, CV_8UC1);
-//    std::vector<float> histogram = compute_normalized_histogram(source);
-//    std::vector<float> cumulative = compute_normalized_cumulative_histogram(histogram);
     std::vector<int> histogram = compute_histogram(source);
     std::vector<int> cumulative = compute_cumulative_histogram(histogram);
     int pixel_count = source.rows * source.cols;
