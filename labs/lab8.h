@@ -3,6 +3,7 @@
 
 void lab8_histogram(char *filePath);
 void lab8_threshold(char *filePath);
-void lab8_histogram_transforms(char *filePath);
+void lab8_histogram_scaling(char *filePath);
+void lab8_histogram_sliding(char *filePath);
 
 #endif//LAB8_H

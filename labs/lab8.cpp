@@ -166,7 +166,7 @@ void lab8_threshold(char *filePath) {
     imshow("segmented", destination);
 }
 
-void lab8_histogram_transforms(char *filePath) {
+void lab8_histogram_scaling(char *filePath) {
     Mat source = imread(filePath, CV_8UC1);
 
     Mat destination = histogram_scale(source, 2);
@@ -175,4 +175,15 @@ void lab8_histogram_transforms(char *filePath) {
     display_histogram("source histogram", compute_histogram(source));
     imshow("histogram scaled", destination);
     display_histogram("scaled histogram", compute_histogram(destination));
+}
+
+void lab8_histogram_sliding(char *filePath) {
+    Mat source = imread(filePath, CV_8UC1);
+
+    Mat destination = histogram_slide(source, 50);
+
+    imshow("source", source);
+    display_histogram("source histogram", compute_histogram(source));
+    imshow("histogram slided", destination);
+    display_histogram("slided histogram", compute_histogram(destination));
 }

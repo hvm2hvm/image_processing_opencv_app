@@ -111,6 +111,7 @@ void LabApp::file_selected(QListWidgetItem *current, QListWidgetItem *previous) 
     Task *task = tasks.at(taskIndex);
     File *file = files.at(fileIndex);
 
+    cvDestroyAllWindows();
     task->execute(file->getFilePath());
 }
 
@@ -125,7 +126,9 @@ QList<Lab*> initialize_labs() {
                    ->addFilesDir("../../Images/lab8"))
          ->addTask((new Task("segment image", &lab8_threshold))
                    ->addFilesDir("../../Images/lab8"))
-         ->addTask((new Task("histogram transforms", &lab8_histogram_transforms))
+         ->addTask((new Task("histogram scaling", &lab8_histogram_scaling))
+                   ->addFilesDir("../../Images/lab8"))
+         ->addTask((new Task("histogram sliding", &lab8_histogram_sliding))
                    ->addFilesDir("../../Images/lab8"))
     );
 
