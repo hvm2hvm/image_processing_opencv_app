@@ -1,7 +1,22 @@
 #include "../project.h"
-#include <vector>
 
-std::vector<float> grayscaleHistogram(Mat source) {
+std::vector<int> compute_histogram(Mat source) {
+    std::vector<int> result = std::vector<int>(256);
+
+    for (int i = 0; i < 256; i++) {
+        result[i] = 0;
+    }
+
+    for (int i = 0; i < source.rows; i++) {
+        for (int j = 0; j < source.cols; j++) {
+            result[source.at<unsigned char>(i, j)] += 1;
+        }
+    }
+
+    return result;
+}
+
+std::vector<float> compute_normalized_histogram(Mat source) {
     std::vector<float> result = std::vector<float>(256);
     float numPixels = source.rows * source.cols;
 
@@ -22,7 +37,7 @@ std::vector<float> grayscaleHistogram(Mat source) {
     return result;
 }
 
-std::vector<float> histogramMaximums(std::vector<float> histogram) {
+std::vector<float> compute_histogram_maximums(std::vector<float> histogram) {
     int wh = 5; float threshold = 0.0003;
     std::vector<float> result = std::vector<float>(256);
 
@@ -47,7 +62,31 @@ std::vector<float> histogramMaximums(std::vector<float> histogram) {
     return result;
 }
 
-void displayHistogram(char *name, std::vector<float> histogram) {
+void display_histogram(const char *name, std::vector<int> histogram) {
+    int height = 450, width = 512;
+    Mat display = Mat(height, width, CV_8UC3);
+    int max=0;
+
+    for (int i = 0; i < 256; i++) {
+        if (max < histogram[i]) {
+            max = histogram[i];
+        }
+    }
+
+    for (int i = 0; i < display.rows * display.cols * 3; i++) {
+        display.data[i] = 0;
+    }
+
+    for (int i = 0; i < 256; i++) {
+        Point topLeft = Point(i * width / 256, height * (max - histogram[i]) / max);
+        Point bottomRight = Point((i + 1) * width / 256 - 1, height);
+        rectangle(display, topLeft, bottomRight, CV_RGB(255,255,255), CV_FILLED);
+    }
+
+    imshow(name, display);
+}
+
+void display_normalized_histogram(const char *name, std::vector<float> histogram) {
     int height = 450, width = 512;
     Mat display = Mat(height, width, CV_8UC3);
     float max=0;
@@ -112,9 +151,9 @@ Mat multilevelThreshold(Mat source_param, bool dither=false, bool showHist=false
     Mat source = source_param.clone();
     Mat result = Mat(source.rows, source.cols, CV_8UC1);
     std::vector<float> maximums =
-        histogramMaximums(grayscaleHistogram(source));
+            compute_histogram_maximums(compute_normalized_histogram(source));
     if (showHist) {
-        displayHistogram("maximums", maximums);
+        display_normalized_histogram("maximums", maximums);
     }
 
     std::vector<unsigned char> colors = thresholdColors(maximums);
@@ -150,11 +189,11 @@ void simpleHistogram() {
     while (openFileDlg(fname)) {
         Mat source = imread(fname, CV_LOAD_IMAGE_GRAYSCALE);
 
-        std::vector<float> histogram = grayscaleHistogram(source);
-        std::vector<float> maximums = histogramMaximums(histogram);
+        std::vector<float> histogram = compute_normalized_histogram(source);
+        std::vector<float> maximums = compute_histogram_maximums(histogram);
 
-        displayHistogram("histogram", histogram);
-        displayHistogram("maximums", maximums);
+        display_normalized_histogram("histogram", histogram);
+        display_normalized_histogram("maximums", maximums);
 
         waitKey();
     }

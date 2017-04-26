@@ -45,13 +45,16 @@ LabApp::LabApp(QList<Lab*> labs) {
     this->task_list = new QListWidget(this);
     this->file_list = new QListWidget(this);
 
+    this->lab_list->setSelectionMode(QAbstractItemView::SingleSelection);
+    this->task_list->setSelectionMode(QAbstractItemView::SingleSelection);
+    this->file_list->setSelectionMode(QAbstractItemView::SingleSelection);
+
     this->main_layout->addWidget(this->lab_list);
     this->main_layout->addWidget(this->task_list);
     this->main_layout->addWidget(this->file_list);
 
     this->lab_list->clear();
     for (auto i = this->labs.begin(); i != this->labs.end(); ++i) {
-        // printf("name: %s\n", (*i)->getName().toUtf8().data());
         this->lab_list->addItem((*i)->getName());
     }
 
@@ -61,6 +64,8 @@ LabApp::LabApp(QList<Lab*> labs) {
             this, SLOT(task_selected(QListWidgetItem*, QListWidgetItem*)));
     connect(this->file_list, SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)),
             this, SLOT(file_selected(QListWidgetItem*, QListWidgetItem*)));
+
+    this->lab_list->setCurrentRow(this->lab_list->count()-1);
 };
 
 void LabApp::lab_selected(QListWidgetItem *current, QListWidgetItem *previous) {
@@ -71,6 +76,8 @@ void LabApp::lab_selected(QListWidgetItem *current, QListWidgetItem *previous) {
     for (auto task = tasks.begin(); task != tasks.end(); ++task) {
         this->task_list->addItem((*task)->getName());
     }
+
+    this->task_list->setCurrentRow(this->task_list->count()-1);
 }
 
 void LabApp::task_selected(QListWidgetItem *current, QListWidgetItem *previous) {
@@ -86,6 +93,7 @@ void LabApp::task_selected(QListWidgetItem *current, QListWidgetItem *previous) 
     for (auto file = files.begin(); file != files.end(); ++file) {
         this->file_list->addItem((*file)->getFileName());
     }
+    this->file_list->setCurrentRow(0);
 }
 
 void LabApp::file_selected(QListWidgetItem *current, QListWidgetItem *previous) {
@@ -113,9 +121,7 @@ QList<Lab*> initialize_labs() {
                    ->addFilesDir("../../Images/lab6"))
     );
     result.push_back((new Lab("lab 8"))
-         ->addTask((new Task("deviation", &lab8_deviation))
-                   ->addFilesDir("../../Images/lab8"))
-         ->addTask((new Task("histogram", &lab8_histogram))
+         ->addTask((new Task("compute histogram", &lab8_histogram))
                    ->addFilesDir("../../Images/lab8"))
     );
 
