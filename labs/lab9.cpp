@@ -160,10 +160,29 @@ Mat ideal_lowhighpass(Mat source, float radius, bool is_lowpass) {
         for (int j=0; j<source.cols; j++) {
             float d = (source.rows / 2 - i) * (source.rows / 2 - i) +
                     (source.cols / 2 - j) * (source.cols / 2 - j);
-            if (d < radius ^ is_lowpass) {
+            if (d < radius * radius ^ is_lowpass) {
                 frequency.real.at<float>(i, j) = 0;
                 frequency.img.at<float>(i, j) = 0;
             }
+        }
+    }
+
+    return convert_from_frequency_domain(frequency);
+}
+
+Mat ideal_gaussian_lowhighpass(Mat source, float A, bool is_lowpass) {
+    FrequencyDomain frequency = convert_to_frequency_domain(source);
+
+    for (int i=0; i<source.rows; i++) {
+        for (int j=0; j<source.cols; j++) {
+            float d = (source.rows / 2 - i) * (source.rows / 2 - i) +
+                    (source.cols / 2 - j) * (source.cols / 2 - j);
+            float factor = exp(-d / A / A);
+            if (!is_lowpass) {
+                factor = 1 - factor;
+            }
+            frequency.real.at<float>(i, j) *= factor;
+            frequency.img.at<float>(i, j) *= factor;
         }
     }
 
@@ -282,8 +301,18 @@ void lab9_fourier_parameters(char *fileName) {
 
 void lab9_ideal_lowhighpass(char *fileName) {
     Mat source = imread(fileName, CV_8UC1);
-    Mat with_lowpass = ideal_lowhighpass(source, 100, true);
-    Mat with_highpass = ideal_lowhighpass(source, 100, false);
+    Mat with_lowpass = ideal_lowhighpass(source, 10, true);
+    Mat with_highpass = ideal_lowhighpass(source, 10, false);
+
+    imshow("source", source);
+    imshow("lowpass", with_lowpass);
+    imshow("highpass", with_highpass);
+}
+
+void lab9_ideal_gaussian_lowhighpass(char *fileName) {
+    Mat source = imread(fileName, CV_8UC1);
+    Mat with_lowpass = ideal_gaussian_lowhighpass(source, 10, true);
+    Mat with_highpass = ideal_gaussian_lowhighpass(source, 10, false);
 
     imshow("source", source);
     imshow("lowpass", with_lowpass);

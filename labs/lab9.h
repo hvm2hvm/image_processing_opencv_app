@@ -21,5 +21,6 @@ void lab9_laplace_8neighbors_lowpass(char *fileName);
 void lab9_fourier_transform(char *fileName);
 void lab9_fourier_parameters(char *fileName);
 void lab9_ideal_lowhighpass(char *fileName);
+void lab9_ideal_gaussian_lowhighpass(char *fileName);
 
 #endif//LAB9_H

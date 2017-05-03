@@ -156,6 +156,8 @@ QList<Lab*> initialize_labs() {
                    ->addFilesDir("../../Images/lab9"))
          ->addTask((new Task("ideal low/high pass", &lab9_ideal_lowhighpass))
                    ->addFilesDir("../../Images/lab9"))
+         ->addTask((new Task("ideal gaussian low/high pass", &lab9_ideal_gaussian_lowhighpass))
+                   ->addFilesDir("../../Images/lab9"))
     );
 
     return result;
