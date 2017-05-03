@@ -134,6 +134,24 @@ FrequencyDomain convert_to_frequency_domain(Mat source) {
     return FrequencyDomain(fourier_channels[0], fourier_channels[1]);
 }
 
+Mat compute_difference(Mat a, Mat b) {
+    assert(a.rows == b.rows);
+    assert(a.cols == b.cols);
+
+    Mat destination(a.rows, a.cols, CV_8UC1);
+
+    for (int i=0; i<a.rows; i++) {
+        for (int j=0; j<a.cols; j++) {
+            int a_value = a.at<unsigned char>(i, j);
+            int b_value = b.at<unsigned char>(i, j);
+            destination.at<unsigned char>(i, j) =
+                bounded(128 + (a_value - b_value) / 2);
+        }
+    }
+
+    return destination;
+}
+
 void display_frequency_parameters(FrequencyDomain frequency_domain) {
     Mat fourier_magnitude, fourier_phase;
     magnitude(frequency_domain.real, frequency_domain.img, fourier_magnitude);
@@ -226,9 +244,11 @@ void lab9_fourier_transform(char *fileName) {
     Mat source = imread(fileName, CV_8UC1);
     FrequencyDomain frequency_domain = convert_to_frequency_domain(source);
     Mat destination = convert_from_frequency_domain(frequency_domain);
+    Mat difference = compute_difference(destination, source);
 
     imshow("source", source);
     imshow("destination", destination);
+    imshow("difference", difference);
 }
 
 void lab9_fourier_parameters(char *fileName) {
