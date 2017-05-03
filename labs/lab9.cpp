@@ -74,6 +74,7 @@ Mat initialize_filter(int size, ...) {
 
 Mat normalize_float_data(Mat float_data, bool use_log) {
     Mat intermediate(float_data.rows, float_data.cols, CV_32FC1);
+    float minimum = 1e10;
     float maximum = -1;
 
     for (int i=0; i<float_data.rows; i++) {
@@ -84,6 +85,9 @@ Mat normalize_float_data(Mat float_data, bool use_log) {
             if (maximum < dest_value) {
                 maximum = dest_value;
             }
+            if (minimum > dest_value) {
+                minimum = dest_value;
+            }
         }
     }
 
@@ -92,7 +96,7 @@ Mat normalize_float_data(Mat float_data, bool use_log) {
     for (int i=0; i<float_data.rows; i++) {
         for (int j = 0; j < float_data.cols; j++) {
             destination.at<unsigned char>(i, j) =
-                bounded(255 * intermediate.at<float>(i, j) / maximum);
+                bounded(255 * (intermediate.at<float>(i, j) - minimum) / (maximum - minimum));
         }
     }
 
@@ -134,6 +138,38 @@ FrequencyDomain convert_to_frequency_domain(Mat source) {
     return FrequencyDomain(fourier_channels[0], fourier_channels[1]);
 }
 
+Mat convert_from_frequency_domain(FrequencyDomain frequency) {
+    Mat fourier_channels[] = {frequency.real, frequency.img};
+
+    Mat fourier_merged;
+    merge(fourier_channels, 2, fourier_merged);
+    Mat destination, destination_float;
+    dft(fourier_merged, destination_float, DFT_INVERSE | DFT_REAL_OUTPUT | DFT_SCALE);
+
+    destination_float = centering_transformation(destination_float);
+
+    destination = normalize_float_data(destination_float, false);
+
+    return destination;
+}
+
+Mat ideal_lowhighpass(Mat source, float radius, bool is_lowpass) {
+    FrequencyDomain frequency = convert_to_frequency_domain(source);
+
+    for (int i=0; i<source.rows; i++) {
+        for (int j=0; j<source.cols; j++) {
+            float d = (source.rows / 2 - i) * (source.rows / 2 - i) +
+                    (source.cols / 2 - j) * (source.cols / 2 - j);
+            if (d < radius ^ is_lowpass) {
+                frequency.real.at<float>(i, j) = 0;
+                frequency.img.at<float>(i, j) = 0;
+            }
+        }
+    }
+
+    return convert_from_frequency_domain(frequency);
+}
+
 Mat compute_difference(Mat a, Mat b) {
     assert(a.rows == b.rows);
     assert(a.cols == b.cols);
@@ -160,21 +196,6 @@ void display_frequency_parameters(FrequencyDomain frequency_domain) {
     display_float_data("imag", frequency_domain.img);
     display_float_data("magnitude", fourier_magnitude);
     display_float_data("phase", fourier_phase);
-}
-
-Mat convert_from_frequency_domain(FrequencyDomain frequency) {
-    Mat fourier_channels[] = {frequency.real, frequency.img};
-
-    Mat fourier_merged;
-    merge(fourier_channels, 2, fourier_merged);
-    Mat destination, destination_float;
-    dft(fourier_merged, destination_float, DFT_INVERSE | DFT_REAL_OUTPUT | DFT_SCALE);
-
-    destination_float = centering_transformation(destination_float);
-
-    destination = normalize_float_data(destination_float, false);
-
-    return destination;
 }
 
 void lab9_convolution_custom(char *fileName) {
@@ -257,4 +278,14 @@ void lab9_fourier_parameters(char *fileName) {
 
     imshow("source", source);
     display_frequency_parameters(frequency_domain);
+}
+
+void lab9_ideal_lowhighpass(char *fileName) {
+    Mat source = imread(fileName, CV_8UC1);
+    Mat with_lowpass = ideal_lowhighpass(source, 100, true);
+    Mat with_highpass = ideal_lowhighpass(source, 100, false);
+
+    imshow("source", source);
+    imshow("lowpass", with_lowpass);
+    imshow("highpass", with_highpass);
 }

@@ -154,6 +154,8 @@ QList<Lab*> initialize_labs() {
                    ->addFilesDir("../../Images/lab9"))
          ->addTask((new Task("fourier parameters", &lab9_fourier_parameters))
                    ->addFilesDir("../../Images/lab9"))
+         ->addTask((new Task("ideal low/high pass", &lab9_ideal_lowhighpass))
+                   ->addFilesDir("../../Images/lab9"))
     );
 
     return result;
