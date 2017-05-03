@@ -1,7 +1,5 @@
 #include "../project.h"
 
-// #define PER_PIXEL_DEBUG
-
 void print_mat(Mat mat) {
     for (int i=0; i<mat.rows; i++) {
         for (int j=0; j<mat.cols; j++) {
@@ -14,29 +12,15 @@ void print_mat(Mat mat) {
 int apply_filter_on_pixel(Mat source, int row, int col, Mat filter) {
     int edge = filter.rows / 2;
     int result = 0;
-#ifdef PER_PIXEL_DEBUG
-    printf("apply on pixel debug data\n");
-    printf("rows = %d, edge = %d\n", filter.rows, edge);
-#endif
     for (int i=-edge; i<=edge; i++) {
         for (int j=-edge; j<=edge; j++) {
             int filter_ii = edge+i;
             int filter_jj = edge+j;
             int source_value = source.at<unsigned char>(row+i, col+j);
             int filter_value = filter.at<unsigned char>(filter_ii, filter_jj);
-#ifdef PER_PIXEL_DEBUG
-            printf("  (%d, %d)/(%d, %d): result = %d source = %d filter = %d",
-                   i, j, filter_ii, filter_jj, result, source_value, filter_value);
-#endif
             result += source_value * filter_value;
-#ifdef PER_PIXEL_DEBUG
-            printf(" result = %d\n", result);
-#endif
         }
     }
-#ifdef PER_PIXEL_DEBUG
-    printf("apply on pixel, result = %d\n", result);
-#endif
     return result;
 }
 
