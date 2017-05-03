@@ -135,6 +135,10 @@ QList<Lab*> initialize_labs() {
          ->addTask((new Task("histogram equalization", &lab8_histogram_equalization))
                    ->addFilesDir("../../Images/lab8"))
     );
+    result.push_back((new Lab("lab 9"))
+         ->addTask((new Task("task 1", &lab9_convolution_custom))
+                   ->addFilesDir("../../Images/lab9"))
+    );
 
     return result;
 }

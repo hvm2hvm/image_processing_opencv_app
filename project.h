@@ -18,6 +18,9 @@ using namespace cv;
 #include "labs/lab6.h"
 #include "labs/lab7.h"
 #include "labs/lab8.h"
+#include "labs/lab9.h"
+#include "labs/lab10.h"
+#include "labs/lab11.h"
 
 #define COLOR_CANVAS 255
 #define COLOR_OBJECT 0
