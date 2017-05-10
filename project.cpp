@@ -11,7 +11,7 @@ void Task::execute(QString filePath) {
 }
 
 void addFilesFromDir(QList<File*> &files, QString directory) {
-    QDir dir(directory);
+    QDir dir(QString("../../Images/") + directory);
     QFileInfoList filesList = dir.entryInfoList(QDir::Files);
     for (auto file = filesList.begin(); file != filesList.end(); ++file) {
         files.push_back(new File(
@@ -156,7 +156,7 @@ QList<Lab*> initialize_labs() {
     QList<Lab*> result;
     result.push_back((new Lab("lab 6"))
          ->addTask(new Task("contour points", &lab6_contour_points))
-         ->addFilesDir("../../Images/lab6")
+         ->addFilesDir("lab6")
     );
     result.push_back((new Lab("lab 8"))
          ->addTask(new Task("compute histogram", &lab8_histogram))
@@ -165,7 +165,7 @@ QList<Lab*> initialize_labs() {
          ->addTask(new Task("histogram sliding", &lab8_histogram_sliding))
          ->addTask(new Task("gamma correction", &lab8_gamma_correction))
          ->addTask(new Task("histogram equalization", &lab8_histogram_equalization))
-         ->addFilesDir("../../Images/lab8")
+         ->addFilesDir("lab8")
     );
     result.push_back((new Lab("lab 9"))
          ->addTask(new Task("custom convolution filter", &lab9_convolution_custom))
@@ -179,13 +179,13 @@ QList<Lab*> initialize_labs() {
          ->addTask(new Task("fourier parameters", &lab9_fourier_parameters))
          ->addTask(new Task("ideal low/high pass", &lab9_ideal_lowhighpass))
          ->addTask(new Task("ideal gaussian low/high pass", &lab9_ideal_gaussian_lowhighpass))
-         ->addFilesDir("../../Images/lab9")
+         ->addFilesDir("lab9")
     );
     result.push_back((new Lab("lab 10"))
          ->addTask(new Task("median filter", &lab10_median_filter))
          ->addTask(new Task("gaussian filter", &lab10_gaussian_filter))
          ->addTask(new Task("gaussian 1d filters", &lab10_gaussian_1d_filter))
-         ->addFilesDir("../../Images/lab10")
+         ->addFilesDir("lab10")
     );
 
     return result;
