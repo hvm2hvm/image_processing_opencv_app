@@ -53,8 +53,6 @@ Mat initialize_gaussian_filter(float sigma) {
 
 Mat apply_gaussian_filter(Mat source, float sigma) {
     Mat filter = initialize_gaussian_filter(sigma);
-    printf("filter: \n");
-    print_mat(filter);
 
     return apply_convolution_filter(source, filter);
 }

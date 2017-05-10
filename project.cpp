@@ -38,21 +38,26 @@ QString Lab::getName() {
 LabApp::LabApp(QList<Lab*> labs) {
     this->labs = labs;
 
-    main_layout = new QHBoxLayout(this);
+    main_layout = new QVBoxLayout(this);
+    lists_layout = new QHBoxLayout();
     this->setLayout(main_layout);
     this->setMinimumHeight(500);
 
     this->lab_list = new QListWidget(this);
     this->task_list = new QListWidget(this);
     this->file_list = new QListWidget(this);
+    this->status_label = new QLabel(this);
 
     this->lab_list->setSelectionMode(QAbstractItemView::SingleSelection);
     this->task_list->setSelectionMode(QAbstractItemView::SingleSelection);
     this->file_list->setSelectionMode(QAbstractItemView::SingleSelection);
 
-    this->main_layout->addWidget(this->lab_list);
-    this->main_layout->addWidget(this->task_list);
-    this->main_layout->addWidget(this->file_list);
+    this->main_layout->addItem(this->lists_layout);
+    this->main_layout->addWidget(this->status_label);
+
+    this->lists_layout->addWidget(this->lab_list);
+    this->lists_layout->addWidget(this->task_list);
+    this->lists_layout->addWidget(this->file_list);
 
     this->lab_list->clear();
     for (auto i = this->labs.begin(); i != this->labs.end(); ++i) {
@@ -112,8 +117,21 @@ void LabApp::file_selected(QListWidgetItem *current, QListWidgetItem *previous) 
     Task *task = tasks.at(taskIndex);
     File *file = files.at(fileIndex);
 
+    this->execute_task(task, file);
+}
+
+void LabApp::execute_task(Task *task, File *file) {
     cvDestroyAllWindows();
+
+    char buffer[64];
+    int64 tick_start = getTickCount();
+
     task->execute(file->getFilePath());
+
+    int64 tick_end = getTickCount();
+    snprintf(buffer, 64, "Operation executed in %7.4fs\n", (tick_end - tick_start) / getTickFrequency());
+
+    this->status_label->setText(buffer);
 }
 
 QList<Lab*> initialize_labs() {

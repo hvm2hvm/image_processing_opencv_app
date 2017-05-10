@@ -6,6 +6,7 @@
 #include <opencv/highgui.h>
 #include <opencv/cvaux.h>
 #include <QListWidget>
+#include <QtWidgets/QLabel>
 
 using namespace cv;
 
@@ -86,9 +87,12 @@ public slots:
     void file_selected(QListWidgetItem *current, QListWidgetItem *previous);
 
 private:
-    QLayout *main_layout;
+    QLayout *main_layout, *lists_layout;
     QList<Lab*> labs;
     QListWidget *lab_list, *task_list, *file_list;
+    QLabel *status_label;
+
+    void execute_task(Task *task, File *file);
 
 };
 
