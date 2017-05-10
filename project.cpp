@@ -10,24 +10,34 @@ void Task::execute(QString filePath) {
     this->operation(filePath.toUtf8().data());
 }
 
-Task* Task::addFilesDir(QString directory) {
+void addFilesFromDir(QList<File*> &files, QString directory) {
     QDir dir(directory);
     QFileInfoList filesList = dir.entryInfoList(QDir::Files);
     for (auto file = filesList.begin(); file != filesList.end(); ++file) {
-        this->files.push_back(new File(
+        files.push_back(new File(
                 file->absoluteFilePath(), file->fileName()
         ));
     }
+}
+
+Task* Task::addFilesDir(QString directory) {
+    addFilesFromDir(this->files, directory);
     return this;
 }
 
 Lab::Lab(QString name) {
     this->name = name;
     this->tasks = QList<Task*>();
+    this->files = QList<File*>();
 }
 
 Lab* Lab::addTask(Task *task) {
     this->tasks.push_back(task);
+    return this;
+}
+
+Lab* Lab::addFilesDir(QString directory) {
+    addFilesFromDir(this->files, directory);
     return this;
 }
 
@@ -75,8 +85,8 @@ LabApp::LabApp(QList<Lab*> labs) {
 };
 
 void LabApp::lab_selected(QListWidgetItem *current, QListWidgetItem *previous) {
-    int index = this->lab_list->currentRow();
-    QList<Task*> tasks = this->labs.at(index)->getTasks();
+    int labIndex = this->lab_list->currentRow();
+    QList<Task*> tasks = this->labs.at(labIndex)->getTasks();
 
     this->task_list->clear();
     for (auto task = tasks.begin(); task != tasks.end(); ++task) {
@@ -95,7 +105,8 @@ void LabApp::task_selected(QListWidgetItem *current, QListWidgetItem *previous) 
     if (taskIndex < 0) {
         return;
     }
-    QList<File*> files = tasks.at(taskIndex)->getFiles();
+
+    QList<File*> files = getFiles(labIndex, taskIndex);
     for (auto file = files.begin(); file != files.end(); ++file) {
         this->file_list->addItem((*file)->getFileName());
     }
@@ -109,7 +120,7 @@ void LabApp::file_selected(QListWidgetItem *current, QListWidgetItem *previous) 
     if (taskIndex < 0) {
         return;
     }
-    QList<File*> files = tasks.at(taskIndex)->getFiles();
+    QList<File*> files = getFiles(labIndex, taskIndex);
     int fileIndex = this->file_list->currentRow();
     if (fileIndex < 0) {
         return;
@@ -118,6 +129,13 @@ void LabApp::file_selected(QListWidgetItem *current, QListWidgetItem *previous) 
     File *file = files.at(fileIndex);
 
     this->execute_task(task, file);
+}
+
+QList<File*> LabApp::getFiles(int labIndex, int taskIndex) {
+    QList<File*> lab_files = this->labs.at(labIndex)->getFiles();
+    QList<Task*> tasks = this->labs.at(labIndex)->getTasks();
+    QList<File*> task_files = tasks.at(taskIndex)->getFiles();
+    return lab_files + task_files;
 }
 
 void LabApp::execute_task(Task *task, File *file) {
@@ -137,54 +155,37 @@ void LabApp::execute_task(Task *task, File *file) {
 QList<Lab*> initialize_labs() {
     QList<Lab*> result;
     result.push_back((new Lab("lab 6"))
-         ->addTask((new Task("contour points", &lab6_contour_points))
-                   ->addFilesDir("../../Images/lab6"))
+         ->addTask(new Task("contour points", &lab6_contour_points))
+         ->addFilesDir("../../Images/lab6")
     );
     result.push_back((new Lab("lab 8"))
-         ->addTask((new Task("compute histogram", &lab8_histogram))
-                   ->addFilesDir("../../Images/lab8"))
-         ->addTask((new Task("segment image", &lab8_threshold))
-                   ->addFilesDir("../../Images/lab8"))
-         ->addTask((new Task("histogram scaling", &lab8_histogram_scaling))
-                   ->addFilesDir("../../Images/lab8"))
-         ->addTask((new Task("histogram sliding", &lab8_histogram_sliding))
-                   ->addFilesDir("../../Images/lab8"))
-         ->addTask((new Task("gamma correction", &lab8_gamma_correction))
-                   ->addFilesDir("../../Images/lab8"))
-         ->addTask((new Task("histogram equalization", &lab8_histogram_equalization))
-                   ->addFilesDir("../../Images/lab8"))
+         ->addTask(new Task("compute histogram", &lab8_histogram))
+         ->addTask(new Task("segment image", &lab8_threshold))
+         ->addTask(new Task("histogram scaling", &lab8_histogram_scaling))
+         ->addTask(new Task("histogram sliding", &lab8_histogram_sliding))
+         ->addTask(new Task("gamma correction", &lab8_gamma_correction))
+         ->addTask(new Task("histogram equalization", &lab8_histogram_equalization))
+         ->addFilesDir("../../Images/lab8")
     );
     result.push_back((new Lab("lab 9"))
-         ->addTask((new Task("custom convolution filter", &lab9_convolution_custom))
-                   ->addFilesDir("../../Images/lab9"))
-         ->addTask((new Task("mean filter", &lab9_mean_filter))
-                   ->addFilesDir("../../Images/lab9"))
-         ->addTask((new Task("gaussian filter", &lab9_gaussian_filter))
-                   ->addFilesDir("../../Images/lab9"))
-         ->addTask((new Task("laplace 4 neighbors", &lab9_laplace_4neighbors))
-                   ->addFilesDir("../../Images/lab9"))
-         ->addTask((new Task("laplace 8 neighbors", &lab9_laplace_8neighbors))
-                   ->addFilesDir("../../Images/lab9"))
-         ->addTask((new Task("laplace 4 neighbors and low pass", &lab9_laplace_4neighbors_lowpass))
-                   ->addFilesDir("../../Images/lab9"))
-         ->addTask((new Task("laplace 8 neighbors and low pass", &lab9_laplace_8neighbors_lowpass))
-                   ->addFilesDir("../../Images/lab9"))
-         ->addTask((new Task("fourier identity transform", &lab9_fourier_transform))
-                   ->addFilesDir("../../Images/lab9"))
-         ->addTask((new Task("fourier parameters", &lab9_fourier_parameters))
-                   ->addFilesDir("../../Images/lab9"))
-         ->addTask((new Task("ideal low/high pass", &lab9_ideal_lowhighpass))
-                   ->addFilesDir("../../Images/lab9"))
-         ->addTask((new Task("ideal gaussian low/high pass", &lab9_ideal_gaussian_lowhighpass))
-                   ->addFilesDir("../../Images/lab9"))
+         ->addTask(new Task("custom convolution filter", &lab9_convolution_custom))
+         ->addTask(new Task("mean filter", &lab9_mean_filter))
+         ->addTask(new Task("gaussian filter", &lab9_gaussian_filter))
+         ->addTask(new Task("laplace 4 neighbors", &lab9_laplace_4neighbors))
+         ->addTask(new Task("laplace 8 neighbors", &lab9_laplace_8neighbors))
+         ->addTask(new Task("laplace 4 neighbors and low pass", &lab9_laplace_4neighbors_lowpass))
+         ->addTask(new Task("laplace 8 neighbors and low pass", &lab9_laplace_8neighbors_lowpass))
+         ->addTask(new Task("fourier identity transform", &lab9_fourier_transform))
+         ->addTask(new Task("fourier parameters", &lab9_fourier_parameters))
+         ->addTask(new Task("ideal low/high pass", &lab9_ideal_lowhighpass))
+         ->addTask(new Task("ideal gaussian low/high pass", &lab9_ideal_gaussian_lowhighpass))
+         ->addFilesDir("../../Images/lab9")
     );
     result.push_back((new Lab("lab 10"))
-         ->addTask((new Task("median filter", &lab10_median_filter))
-                ->addFilesDir("../../Images/lab10"))
-         ->addTask((new Task("gaussian filter", &lab10_gaussian_filter))
-                ->addFilesDir("../../Images/lab10"))
-         ->addTask((new Task("gaussian 1d filters", &lab10_gaussian_1d_filter))
-                ->addFilesDir("../../Images/lab10"))
+         ->addTask(new Task("median filter", &lab10_median_filter))
+         ->addTask(new Task("gaussian filter", &lab10_gaussian_filter))
+         ->addTask(new Task("gaussian 1d filters", &lab10_gaussian_1d_filter))
+         ->addFilesDir("../../Images/lab10")
     );
 
     return result;

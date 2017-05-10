@@ -53,8 +53,8 @@ public:
     QString getName() { return this->name; }
 
 private:
-    QList<File*> files;
     QString name;
+    QList<File*> files;
     void (*operation)(char *filePath);
 
 };
@@ -65,12 +65,15 @@ public:
     Lab(QString name);
 
     Lab* addTask(Task* task);
+    Lab* addFilesDir(QString directory);
     QString getName();
     QList<Task*> getTasks() { return this->tasks; }
+    QList<File*> getFiles() { return this->files; }
 
 private:
     QString name;
     QList<Task*> tasks;
+    QList<File*> files;
 
 };
 
@@ -92,6 +95,7 @@ private:
     QListWidget *lab_list, *task_list, *file_list;
     QLabel *status_label;
 
+    QList<File*> getFiles(int labIndex, int taskIndex);
     void execute_task(Task *task, File *file);
 
 };
