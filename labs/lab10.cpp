@@ -102,7 +102,7 @@ void lab10_median_filter(char *fileName) {
 
 void lab10_gaussian_filter(char *fileName) {
     Mat source = imread(fileName, CV_8UC1);
-    Mat destination = apply_gaussian_filter(source, 2);
+    Mat destination = apply_gaussian_filter(source, 4);
 
     imshow("source", source);
     imshow("with gaussian filter", destination);
@@ -110,7 +110,7 @@ void lab10_gaussian_filter(char *fileName) {
 
 void lab10_gaussian_1d_filter(char *fileName) {
     Mat source = imread(fileName, CV_8UC1);
-    Mat destination = apply_gaussian_1d_filters(source, 2);
+    Mat destination = apply_gaussian_1d_filters(source, 4);
 
     imshow("source", source);
     imshow("with gaussian 1d filters", destination);
