@@ -10,12 +10,13 @@ void print_mat(Mat mat) {
 }
 
 int apply_filter_on_pixel(Mat source, int row, int col, Mat filter) {
-    int edge = filter.rows / 2;
+    int edge_rows = filter.rows / 2;
+    int edge_cols = filter.cols / 2;
     int result = 0;
-    for (int i=-edge; i<=edge; i++) {
-        for (int j=-edge; j<=edge; j++) {
-            int filter_ii = edge+i;
-            int filter_jj = edge+j;
+    for (int i=-edge_rows; i<=edge_rows; i++) {
+        for (int j=-edge_cols; j<=edge_cols; j++) {
+            int filter_ii = edge_rows+i;
+            int filter_jj = edge_cols+j;
             int source_value = source.at<unsigned char>(row+i, col+j);
             int filter_value = filter.at<int>(filter_ii, filter_jj);
             result += source_value * filter_value;
@@ -26,19 +27,21 @@ int apply_filter_on_pixel(Mat source, int row, int col, Mat filter) {
 
 Mat apply_convolution_filter(Mat source, Mat filter) {
     Mat destination(source.rows, source.cols, CV_8UC1);
-    int factor=0, edge;
-    assert(filter.rows == filter.cols); // ensure filter is square
+    int factor=0, edge_rows, edge_cols;
+    // assert(filter.rows == filter.cols); // ensure filter is square
     assert(filter.rows % 2);            // ensure filter size is odd (2 * edge + 1)
+    assert(filter.cols % 2);
 
     for (int i=0; i<filter.rows; i++) {
         for (int j=0; j<filter.cols; j++) {
             factor += filter.at<int>(i, j);
         }
     }
-    edge = filter.rows / 2;
+    edge_rows = filter.rows / 2;
+    edge_cols = filter.cols / 2;
 
-    for (int i=edge; i<source.rows-edge; i++) {
-        for (int j=edge; j<source.cols-edge; j++) {
+    for (int i=edge_rows; i<source.rows-edge_rows; i++) {
+        for (int j=edge_cols; j<source.cols-edge_cols; j++) {
             int convoluted = apply_filter_on_pixel(source, i, j, filter);
             if (factor != 0) {
                 convoluted /= factor;

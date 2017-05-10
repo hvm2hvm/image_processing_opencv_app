@@ -50,11 +50,46 @@ Mat initialize_gaussian_filter(float sigma) {
     return result;
 }
 
+Gaussian1DFilters initialize_gaussian_1d_filters(float sigma) {
+    int size = (int)(6 * sigma);
+    if (size % 2 == 0) {
+        size += 1;
+    }
+    Mat vertical(size, 1, CV_32SC1);
+    Mat horizontal(1, size, CV_32SC1);
+
+    int x0, y0;
+    x0 = y0 = size / 2;
+    for (int i=0; i<size; i++) {
+        for (int j=0; j<size; j++) {
+            float value = 1.0f / 2.0f / PI / sigma / sigma;
+            value *= exp(-((j-x0) * (j-x0) + (i-y0) * (i-y0)) / 2 / sigma / sigma);
+            if (i == y0) {
+                horizontal.at<int>(0, j) = (int)(value * 1000);
+            }
+            if (j == x0) {
+                vertical.at<int>(i, 0) = (int)(value * 1000);
+            }
+        }
+    }
+
+    return Gaussian1DFilters(vertical, horizontal);
+}
 
 Mat apply_gaussian_filter(Mat source, float sigma) {
     Mat filter = initialize_gaussian_filter(sigma);
 
     return apply_convolution_filter(source, filter);
+}
+
+Mat apply_gaussian_1d_filters(Mat source, float sigma) {
+    Gaussian1DFilters filters = initialize_gaussian_1d_filters(sigma);
+
+    return apply_convolution_filter(
+            apply_convolution_filter(
+                    source,
+                    filters.horizontal),
+            filters.vertical);
 }
 
 void lab10_median_filter(char *fileName) {
@@ -71,4 +106,12 @@ void lab10_gaussian_filter(char *fileName) {
 
     imshow("source", source);
     imshow("with gaussian filter", destination);
+}
+
+void lab10_gaussian_1d_filter(char *fileName) {
+    Mat source = imread(fileName, CV_8UC1);
+    Mat destination = apply_gaussian_1d_filters(source, 2);
+
+    imshow("source", source);
+    imshow("with gaussian 1d filters", destination);
 }

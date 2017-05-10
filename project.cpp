@@ -183,6 +183,8 @@ QList<Lab*> initialize_labs() {
                 ->addFilesDir("../../Images/lab10"))
          ->addTask((new Task("gaussian filter", &lab10_gaussian_filter))
                 ->addFilesDir("../../Images/lab10"))
+         ->addTask((new Task("gaussian 1d filters", &lab10_gaussian_1d_filter))
+                ->addFilesDir("../../Images/lab10"))
     );
 
     return result;
