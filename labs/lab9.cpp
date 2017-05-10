@@ -3,7 +3,7 @@
 void print_mat(Mat mat) {
     for (int i=0; i<mat.rows; i++) {
         for (int j=0; j<mat.cols; j++) {
-            printf("%d ", mat.at<char>(i, j));
+            printf("%d ", mat.at<int>(i, j));
         }
         printf("\n");
     }
@@ -17,7 +17,7 @@ int apply_filter_on_pixel(Mat source, int row, int col, Mat filter) {
             int filter_ii = edge+i;
             int filter_jj = edge+j;
             int source_value = source.at<unsigned char>(row+i, col+j);
-            int filter_value = filter.at<char>(filter_ii, filter_jj);
+            int filter_value = filter.at<int>(filter_ii, filter_jj);
             result += source_value * filter_value;
         }
     }
@@ -32,7 +32,7 @@ Mat apply_convolution_filter(Mat source, Mat filter) {
 
     for (int i=0; i<filter.rows; i++) {
         for (int j=0; j<filter.cols; j++) {
-            factor += filter.at<char>(i, j);
+            factor += filter.at<int>(i, j);
         }
     }
     edge = filter.rows / 2;
@@ -53,12 +53,12 @@ Mat apply_convolution_filter(Mat source, Mat filter) {
 }
 
 Mat initialize_filter(int size, int array[]) {
-    Mat filter(size, size, CV_8SC1);
+    Mat filter(size, size, CV_32SC1);
     assert(size % 2); // make sure the size is odd (2 * edge + 1)
 
     for (int i=0; i<size; i++) {
         for (int j=0; j<size; j++) {
-            filter.at<char>(i, j) = (char)array[i*size+j];
+            filter.at<int>(i, j) = array[i*size+j];
         }
     }
 
