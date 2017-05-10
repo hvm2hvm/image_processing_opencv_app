@@ -11,6 +11,12 @@ struct FrequencyDomain {
     }
 };
 
+void print_mat(Mat mat);
+Mat initialize_filter(int size, int array[]);
+Mat initialize_filter(int size, ...);
+
+Mat apply_convolution_filter(Mat source, Mat filter);
+
 void lab9_convolution_custom(char *fileName);
 void lab9_mean_filter(char *fileName);
 void lab9_gaussian_filter(char *fileName);

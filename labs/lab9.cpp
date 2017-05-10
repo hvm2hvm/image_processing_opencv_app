@@ -52,16 +52,9 @@ Mat apply_convolution_filter(Mat source, Mat filter) {
     return destination;
 }
 
-Mat initialize_filter(int size, ...) {
+Mat initialize_filter(int size, int array[]) {
     Mat filter(size, size, CV_8SC1);
     assert(size % 2); // make sure the size is odd (2 * edge + 1)
-    va_list args;
-    va_start(args, size);
-    int array[size*size];
-    for (int i=0; i<size*size; i++) {
-        array[i] = va_arg(args, int);
-    }
-    va_end(args);
 
     for (int i=0; i<size; i++) {
         for (int j=0; j<size; j++) {
@@ -70,6 +63,18 @@ Mat initialize_filter(int size, ...) {
     }
 
     return filter;
+}
+
+Mat initialize_filter(int size, ...) {
+    va_list args;
+    va_start(args, size);
+    int array[size*size];
+    for (int i=0; i<size*size; i++) {
+        array[i] = va_arg(args, int);
+    }
+    va_end(args);
+
+    return initialize_filter(size, array);
 }
 
 Mat normalize_float_data(Mat float_data, bool use_log) {

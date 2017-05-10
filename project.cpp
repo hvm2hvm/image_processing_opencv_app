@@ -40,6 +40,7 @@ LabApp::LabApp(QList<Lab*> labs) {
 
     main_layout = new QHBoxLayout(this);
     this->setLayout(main_layout);
+    this->setMinimumHeight(500);
 
     this->lab_list = new QListWidget(this);
     this->task_list = new QListWidget(this);
@@ -158,6 +159,12 @@ QList<Lab*> initialize_labs() {
                    ->addFilesDir("../../Images/lab9"))
          ->addTask((new Task("ideal gaussian low/high pass", &lab9_ideal_gaussian_lowhighpass))
                    ->addFilesDir("../../Images/lab9"))
+    );
+    result.push_back((new Lab("lab 10"))
+         ->addTask((new Task("median filter", &lab10_median_filter))
+                ->addFilesDir("../../Images/lab10"))
+         ->addTask((new Task("gaussian filter", &lab10_gaussian_filter))
+                ->addFilesDir("../../Images/lab10"))
     );
 
     return result;
