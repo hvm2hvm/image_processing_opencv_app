@@ -3,15 +3,6 @@ project(opencv_app)
 
 set(CMAKE_CXX_STANDARD 14)
 
-# FIND_PACKAGE(Qt4 REQUIRED)
-# INCLUDE(${QT_USE_FILE})
-
-#find_package( Qt5Core REQUIRED )
-#find_package( Qt5Widgets REQUIRED )
-#find_package( Qt5Gui REQUIRED )
-#
-#qt5_use_modules( opencv_app Core Widgets Gui )
-
 find_package(Qt5 REQUIRED COMPONENTS Core Widgets Gui)
 
 set(CMAKE_AUTOMOC ON)
@@ -39,7 +30,5 @@ set(SOURCE_FILES
         )
 
 add_executable(opencv_app ${SOURCE_FILES})
-
-#TARGET_LINK_LIBRARIES(opencv_app ${QT_LIBRARIES} ${OpenCV_LIBS})
 
 TARGET_LINK_LIBRARIES(opencv_app Qt5::Core Qt5::Widgets Qt5::Gui ${OpenCV_LIBS})
