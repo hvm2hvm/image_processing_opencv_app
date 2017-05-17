@@ -20,26 +20,74 @@ GradientVectors compute_gradient(Mat horizontal_component, Mat vertical_componen
     return GradientVectors(magnitude, direction);
 }
 
-Mat colorize_gradient_direction(Mat gradient_direction) {
-    Mat destination(gradient_direction.rows, gradient_direction.cols, CV_8UC3);
+Mat encode_gradient_direction(Mat gradient_direction) {
+    Mat destination(gradient_direction.rows, gradient_direction.cols, CV_8UC1);
 
     for (int i=0; i<gradient_direction.rows; i++) {
         for (int j=0; j<gradient_direction.cols; j++) {
             float dir = gradient_direction.at<float>(i, j);
-            Vec3b color;
-            if ((dir < PI/8 && dir > -PI/8) ||
-                (dir > 7*PI/8 || dir < -7*PI/8)) {
-                color = Vec3b(255, 0, 0);
+            int value;
+            if ((dir <= PI/8 && dir >= -PI/8) ||
+                (dir >= 7*PI/8 || dir <= -7*PI/8)) {
+                value = 0;
             } else if ((dir > PI/8 && dir < 3*PI/8) ||
-                        (dir < -PI/7 && dir > -3*PI/8)) {
-                color = Vec3b(0, 255, 0);
-            } else if ((dir > 3*PI/8 && dir < 5*PI/8) ||
-                        (dir < -3*PI/8 && dir > -5*PI/8)) {
-                color = Vec3b(0, 0, 255);
+                        (dir > -7*PI/8 && dir < -5*PI/8)) {
+                value = 1;
+            } else if ((dir >= 3*PI/8 && dir <= 5*PI/8) ||
+                        (dir >= -5*PI/8 && dir <= -3*PI/8)) {
+                value = 2;
             } else {
-                color = Vec3b(255, 255, 0);
+                value = 3;
+            }
+            destination.at<unsigned char>(i, j) = value;
+        }
+    }
+
+    return destination;
+}
+
+Mat colorize_gradient_direction(Mat gradient_direction) {
+    Mat encoded = encode_gradient_direction(gradient_direction);
+    Mat destination(gradient_direction.rows, gradient_direction.cols, CV_8UC3);
+
+    for (int i=0; i<encoded.rows; i++) {
+        for (int j=0; j<encoded.cols; j++) {
+            int value=encoded.at<unsigned char>(i, j);
+            Vec3b color;
+            switch (value) {
+                case 0: color = Vec3b(255, 0, 0); break;
+                case 1: color = Vec3b(0, 255, 0); break;
+                case 2: color = Vec3b(0, 0, 255); break;
+                default: color = Vec3b(255, 255, 0); break;
             }
             destination.at<Vec3b>(i, j) = color;
+        }
+    }
+
+    return destination;
+}
+
+Mat non_maxima_suppression(GradientVectors vectors) {
+    Mat encoded = encode_gradient_direction(vectors.direction);
+    Mat destination(vectors.magnitude.rows, vectors.magnitude.cols, CV_8UC1);
+    int dx[] = {1, 1, 0, 1};
+    int dy[] = {0, 1, 1, 1};
+    int threshold = 15;
+
+    for (int i=1; i<vectors.magnitude.rows-1; i++) {
+        for (int j=1; j<vectors.magnitude.cols-1; j++) {
+            int mag = vectors.magnitude.at<unsigned char>(i, j);
+            int dir = encoded.at<unsigned char>(i, j);
+            int ii = i + dy[dir], ii2 = i - dy[dir];
+            int jj = j + dx[dir], jj2 = j - dx[dir];
+            int mm = vectors.magnitude.at<unsigned char>(ii, jj);
+            int mm2 = vectors.magnitude.at<unsigned char>(ii2, jj2);
+
+            if (mag > threshold && mag > mm && mag > mm2) {
+                destination.at<unsigned char>(i, j) = 255;
+            } else {
+                destination.at<unsigned char>(i, j) = 0;
+            }
         }
     }
 
@@ -109,4 +157,20 @@ void lab11_gradient_thresholding(char *fileName) {
     imshow("source", source);
     imshow("magnitude", vectors.magnitude);
     imshow("thresholded", thresholded);
+}
+
+void lab11_canny_edge_detection(char *fileName) {
+    Mat source = imread(fileName, CV_8UC1);
+    source = apply_gaussian_1d_filters(source, 1.0);
+    Mat horizontal_filter = initialize_filter(3, -1,0,1, -2,0,2, -1,0,1);
+    Mat vertical_filter = initialize_filter(3, 1,2,1, 0,0,0, -1,-2,-1);
+    Mat horizontal = apply_convolution_filter(source, horizontal_filter);
+    Mat vertical = apply_convolution_filter(source, vertical_filter);
+    GradientVectors vectors = compute_gradient(horizontal, vertical);
+    Mat non_maxima = non_maxima_suppression(vectors);
+
+    imshow("source", source);
+    imshow("sobel horizontal", horizontal);
+    imshow("sobel vertical", vertical);
+    imshow("non maxima", non_maxima);
 }

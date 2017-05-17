@@ -16,5 +16,6 @@ void lab11_gradient_sobel(char *fileName);
 void lab11_gradient_roberts(char *fileName);
 void lab11_gradient_magnitude(char *fileName);
 void lab11_gradient_thresholding(char *fileName);
+void lab11_canny_edge_detection(char *fileName);
 
 #endif//LAB11_H

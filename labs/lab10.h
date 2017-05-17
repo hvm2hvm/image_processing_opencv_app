@@ -12,6 +12,7 @@ struct Gaussian1DFilters {
 };
 
 Gaussian1DFilters initialize_gaussian_1d_filters(float sigma);
+Mat apply_gaussian_1d_filters(Mat source, float sigma);
 
 void lab10_median_filter(char *fileName);
 void lab10_gaussian_filter(char *fileName);

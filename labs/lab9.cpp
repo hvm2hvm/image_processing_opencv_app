@@ -46,6 +46,7 @@ Mat apply_convolution_filter(Mat source, Mat filter) {
             if (factor != 0) {
                 convoluted /= factor;
             } else {
+                convoluted /= 2;
                 convoluted += 128;
             }
             destination.at<unsigned char>(i, j) = bounded(convoluted);
