@@ -72,7 +72,6 @@ Mat non_maxima_suppression(GradientVectors vectors) {
     Mat destination(vectors.magnitude.rows, vectors.magnitude.cols, CV_8UC1);
     int dx[] = {1, 1, 0, 1};
     int dy[] = {0, 1, 1, 1};
-    int threshold = 15;
 
     for (int i=1; i<vectors.magnitude.rows-1; i++) {
         for (int j=1; j<vectors.magnitude.cols-1; j++) {
@@ -83,8 +82,8 @@ Mat non_maxima_suppression(GradientVectors vectors) {
             int mm = vectors.magnitude.at<unsigned char>(ii, jj);
             int mm2 = vectors.magnitude.at<unsigned char>(ii2, jj2);
 
-            if (mag > threshold && mag > mm && mag > mm2) {
-                destination.at<unsigned char>(i, j) = 255;
+            if (mag > mm && mag > mm2) {
+                destination.at<unsigned char>(i, j) = mag;
             } else {
                 destination.at<unsigned char>(i, j) = 0;
             }
@@ -92,6 +91,38 @@ Mat non_maxima_suppression(GradientVectors vectors) {
     }
 
     return destination;
+}
+
+Mat compute_edge_types(Mat edges, float p, float k) {
+    std::vector<int> histogram = compute_histogram(edges);
+    int number_non_edge = (int)((1-p) * (edges.rows * edges.cols - histogram[0]));
+    int threshold_high = 0, threshold_low;
+    for (int sum=0,i=1; i<255; i++) {
+        sum += histogram[i];
+        if (sum >= number_non_edge) {
+            threshold_high = i;
+            break;
+        }
+    }
+    threshold_low = (int)(k * threshold_high);
+    Mat destination(edges.rows, edges.cols, CV_8UC1);
+    for (int i=0; i<edges.rows; i++) {
+        for (int j=0; j<edges.cols; j++) {
+            unsigned char mag = edges.at<unsigned char>(i, j);
+            if (mag >= threshold_high) {
+                destination.at<unsigned char>(i, j) = COLOR_HARD_EDGE;
+            } else if (mag >= threshold_low) {
+                destination.at<unsigned char>(i, j) = COLOR_SOFT_EDGE;
+            } else {
+                destination.at<unsigned char>(i, j) = COLOR_NO_EDGE;
+            }
+        }
+    }
+    return destination;
+}
+
+Mat compute_with_edge_extension(Mat edge_types) {
+
 }
 
 void lab11_gradient_prewitt(char *fileName) {
@@ -168,9 +199,11 @@ void lab11_canny_edge_detection(char *fileName) {
     Mat vertical = apply_convolution_filter(source, vertical_filter);
     GradientVectors vectors = compute_gradient(horizontal, vertical);
     Mat non_maxima = non_maxima_suppression(vectors);
+    Mat edge_types = compute_edge_types(non_maxima, 0.2, 0.4);
 
     imshow("source", source);
-    imshow("sobel horizontal", horizontal);
-    imshow("sobel vertical", vertical);
+//    imshow("sobel horizontal", horizontal);
+//    imshow("sobel vertical", vertical);
     imshow("non maxima", non_maxima);
+    imshow("edge types", edge_types);
 }

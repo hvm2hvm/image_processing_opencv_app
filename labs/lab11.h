@@ -1,6 +1,11 @@
 #ifndef LAB11_H
 #define LAB11_H
 
+#define COLOR_EDGE 255
+#define COLOR_HARD_EDGE COLOR_EDGE
+#define COLOR_SOFT_EDGE 128
+#define COLOR_NO_EDGE 0
+
 struct GradientVectors {
     Mat magnitude;
     Mat direction;

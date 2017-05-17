@@ -2,6 +2,9 @@
 #define LAB8_H
 
 Mat segment_with_threshold(Mat source);
+Mat histogram_scale(Mat source, float scale);
+Mat histogram_slide(Mat source, int delta);
+Mat histogram_equalization(Mat source);
 
 void lab8_histogram(char *filePath);
 void lab8_threshold(char *filePath);
