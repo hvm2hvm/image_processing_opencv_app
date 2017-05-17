@@ -187,6 +187,13 @@ QList<Lab*> initialize_labs() {
          ->addTask(new Task("gaussian 1d filters", &lab10_gaussian_1d_filter))
          ->addFilesDir("lab10")
     );
+    result.push_back((new Lab("lab 11"))
+         ->addTask(new Task("prewitt components", &lab11_gradient_prewitt))
+         ->addTask(new Task("sobel components", &lab11_gradient_sobel))
+         ->addTask(new Task("roberts components", &lab11_gradient_roberts))
+         ->addTask(new Task("gradient magnitude", &lab11_gradient_magnitude))
+         ->addFilesDir("lab10")
+    );
 
     return result;
 }
