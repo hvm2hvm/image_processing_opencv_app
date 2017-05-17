@@ -190,8 +190,9 @@ QList<Lab*> initialize_labs() {
     result.push_back((new Lab("lab 11"))
          ->addTask(new Task("prewitt components", &lab11_gradient_prewitt))
          ->addTask(new Task("sobel components", &lab11_gradient_sobel))
-         ->addTask(new Task("roberts components", &lab11_gradient_roberts))
+         // ->addTask(new Task("roberts components", &lab11_gradient_roberts))
          ->addTask(new Task("gradient magnitude", &lab11_gradient_magnitude))
+         ->addTask(new Task("gradient thresholding", &lab11_gradient_thresholding))
          ->addFilesDir("lab10")
     );
 

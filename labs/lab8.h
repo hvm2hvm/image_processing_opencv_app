@@ -1,6 +1,8 @@
 #ifndef LAB8_H
 #define LAB8_H
 
+Mat segment_with_threshold(Mat source);
+
 void lab8_histogram(char *filePath);
 void lab8_threshold(char *filePath);
 void lab8_histogram_scaling(char *filePath);

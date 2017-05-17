@@ -15,6 +15,8 @@ void print_mat(Mat mat);
 Mat initialize_filter(int size, int array[]);
 Mat initialize_filter(int size, ...);
 
+void display_float_data(const char *name, Mat float_data);
+
 Mat apply_convolution_filter(Mat source, Mat filter);
 
 void lab9_convolution_custom(char *fileName);
