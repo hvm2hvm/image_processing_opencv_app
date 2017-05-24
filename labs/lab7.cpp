@@ -230,32 +230,53 @@ Mat region_filling(Mat source, int row, int col) {
     }
 }
 
-void lab7() {
-    for (;;) {
-        char *filename = open_file("lab7");
-        if (filename == NULL) {
-            break;
-        }
+void lab7_dilation(char *fileName) {
+    Mat source = imread(fileName, CV_8UC1);
+    Mat nucleus = initialize_filter(3, 1,1,1, 1,1,1, 1,1,1);
+    Mat dilated = morph(source, nucleus, OPERATION_DILATION);
 
-        uchar nucleus_data[] = {1,1,1, 1,1,1, 1,1,1};
+    imshow("source", source);
+    imshow("dilated", dilated);
+}
 
-        Mat source = cvLoadImage(filename, CV_8UC1);
-        Mat nucleus(3, 3, CV_8UC1);
-        nucleus.data = &nucleus_data[0];
+void lab7_erosion(char *fileName) {
+    Mat source = imread(fileName, CV_8UC1);
+    Mat nucleus = initialize_filter(3, 1,1,1, 1,1,1, 1,1,1);
+    Mat dilated = morph(source, nucleus, OPERATION_DILATION);
+    Mat eroded = morph(source, nucleus, OPERATION_EROSION);
 
-//        Mat dilated = morph(source, nucleus, OPERATION_DILATION);
-//        Mat eroded = morph(source, nucleus, OPERATION_EROSION);
-//        Mat opened = morph_open(source, 5);
-//        Mat closed = morph_close(source, 5);
-//        Mat boundary = boundary_extraction(source);
-        Mat filled = region_filling(source, source.rows/2, source.cols/2);
+    imshow("source", source);
+    imshow("eroded", eroded);
+}
 
-        imshow("source", source);
-//        imshow("dilated", dilated);
-//        imshow("eroded", eroded);
-//        imshow("opened", opened);
-//        imshow("closed", closed);
-//        imshow("boundary", boundary);
-        imshow("filled", filled);
-    }
+void lab7_open(char *fileName) {
+    Mat source = imread(fileName, CV_8UC1);
+    Mat dest_open = morph_open(source, 5);
+
+    imshow("source", source);
+    imshow("open", dest_open);
+}
+
+void lab7_close(char *fileName) {
+    Mat source = imread(fileName, CV_8UC1);
+    Mat dest_closed = morph_close(source, 5);
+
+    imshow("source", source);
+    imshow("closed", dest_closed);
+}
+
+void lab7_boundary(char *fileName) {
+    Mat source = imread(fileName, CV_8UC1);
+    Mat boundary = boundary_extraction(source);
+
+    imshow("source", source);
+    imshow("boundary", boundary);
+}
+
+void lab7_region_filling(char *fileName) {
+    Mat source = imread(fileName, CV_8UC1);
+    Mat filled = region_filling(source, source.rows/2, source.cols/2);
+
+    imshow("source", source);
+    imshow("region filled", filled);
 }
