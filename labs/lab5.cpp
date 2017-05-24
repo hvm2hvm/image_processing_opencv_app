@@ -96,7 +96,6 @@ Mat labelObjectsBFS(Mat source) {
                         for (int k = 0; k < neighbors.size(); k++) {
                             int nvalue = source.at<uchar>(neighbors[k].y, neighbors[k].x);
                             if (nvalue == COLOR_OBJECT) {
-                                // printf("  setting neighbor (%d,%d) as %d\n", neighbors[k].y, neighbors[k].x, currentLabel);
                                 destination.at<int>(neighbors[k].y, neighbors[k].x) = currentLabel;
                                 entries.push(neighbors[k]);
                             }
@@ -120,9 +119,6 @@ Mat labelObjectsMultipass(Mat source) {
     for (int i = 0; i < source.rows; i++) {
         for (int j = 0; j < source.cols; j++) {
             int value = source.at<uchar>(i, j);
-            if (i == 110 && j == 172) {
-                i = i;
-            }
             if (destination.at<int>(i, j) == LABEL_NOT_COMPUTED) {
                 if (value == COLOR_OBJECT) {
                     std::vector<Point> neighbors = getValidNeighbors(Point(j, i), destination, true);
@@ -134,7 +130,6 @@ Mat labelObjectsMultipass(Mat source) {
                         for (int k = 0; k < size; k++) {
                             int nlabel = destination.at<int>(neighbors[k].y, neighbors[k].x);
                             labels[k] = nlabel;
-                            // printf("label %d assoc with %d\n", labels[k], nlabel);
                             if (minLabel == -1 || nlabel < minLabel) {
                                 minLabel = nlabel;
                             }
@@ -173,7 +168,6 @@ Vec3b labelToColor(int label) {
     if (label == LABEL_NO_OBJECT) {
         return Vec3b(0, 0, 0);
     }
-    //printf("got label %d\n", label);
 
     return Vec3b(100+label*10, label*10, label*10);
 }
@@ -190,34 +184,16 @@ void displayLabels(String name, Mat computed) {
     imshow(name, destination);
 }
 
-void test_bfs() {
-    char fname[MAX_PATH];
-    while (openFileDlg(fname)) {
-        Mat source = imread(fname, CV_LOAD_IMAGE_GRAYSCALE);
-
-        Mat labelled = labelObjectsBFS(source);
-
-        imshow("source", source);
-        displayLabels("labelled", labelled);
-
-        waitKey();
-    }
+void lab5_bfs(char *fname) {
+    Mat source = imread(fname, CV_LOAD_IMAGE_GRAYSCALE);
+    Mat labelled = labelObjectsBFS(source);
+    imshow("source", source);
+    displayLabels("labelled", labelled);
 }
 
-void test_multipass() {
-    char fname[MAX_PATH];
-    while (openFileDlg(fname)) {
-        Mat source = imread(fname, CV_LOAD_IMAGE_GRAYSCALE);
-
-        Mat labelled = labelObjectsMultipass(source);
-
-        imshow("source", source);
-        displayLabels("labelled", labelled);
-
-        waitKey();
-    }
-}
-
-void lab5() {
-    test_multipass();
+void lab5_multipass(char *fname) {
+    Mat source = imread(fname, CV_LOAD_IMAGE_GRAYSCALE);
+    Mat labelled = labelObjectsMultipass(source);
+    imshow("source", source);
+    displayLabels("labelled", labelled);
 }
