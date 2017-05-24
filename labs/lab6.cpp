@@ -154,42 +154,8 @@ void display_cc_deriv(Mat destination, Point start, int init_dir, std::vector<in
     }
 }
 
-void lab6() {
-    for (;;) {
-        char *filename = open_file("lab6");
-        if (filename == NULL) {
-            break;
-        }
-
-        Mat source = cvLoadImage(filename, CV_8UC1);
-        Mat dest_contour = Mat::zeros(source.rows, source.cols, CV_8UC3);
-        Mat dest_cc = Mat::zeros(600, 800, CV_8UC3);
-        Mat dest_cc_deriv = Mat::zeros(600, 800, CV_8UC3);
-        Mat dest_some_object = Mat::zeros(600, 800, CV_8UC3);
-
-        std::vector<Point> contour = find_contour(source);
-        std::vector<int> chain_code = find_contour_cc(source);
-        std::vector<int> cc_deriv = compute_derivative_cc(chain_code);
-        std::vector<int> object_cc;
-        for (int i=0; i<sizeof(some_object)/sizeof(int); i++) {
-            object_cc.push_back(some_object[i]);
-        }
-
-        display_contour(dest_contour, contour);
-        display_chain_code(dest_cc, Point(200, 200), chain_code);
-        display_cc_deriv(dest_cc_deriv, Point(200, 200), 7, cc_deriv);
-        display_chain_code(dest_some_object, Point(160, 160), object_cc);
-
-        imshow("source", source);
-        imshow("dest_contour", dest_contour);
-        imshow("dest_chain", dest_cc);
-        imshow("dest_cc_deriv", dest_cc_deriv);
-        imshow("dest_object", dest_some_object);
-    }
-}
-
 void lab6_contour_points(char *filePath) {
-    Mat source = cvLoadImage(filePath, CV_8UC1);
+    Mat source = imread(filePath, CV_8UC1);
     Mat dest_contour = Mat::zeros(source.rows, source.cols, CV_8UC3);
 
     std::vector<Point> contour = find_contour(source);
@@ -197,4 +163,36 @@ void lab6_contour_points(char *filePath) {
 
     imshow("source", source);
     imshow("dest_contour", dest_contour);
+}
+
+void lab6_chain_code(char *fileName) {
+    Mat source = imread(fileName, CV_8UC1);
+    Mat dest_cc = Mat::zeros(600, 800, CV_8UC3);
+    std::vector<int> chain_code = find_contour_cc(source);
+    display_chain_code(dest_cc, Point(200, 200), chain_code);
+
+    imshow("source", source);
+    imshow("chain code", dest_cc);
+}
+
+void lab6_chain_deriv(char *fileName) {
+    Mat source = imread(fileName, CV_8UC1);
+    Mat dest_cc_deriv = Mat::zeros(600, 800, CV_8UC3);
+    std::vector<int> chain_code = find_contour_cc(source);
+    std::vector<int> cc_deriv = compute_derivative_cc(chain_code);
+    display_cc_deriv(dest_cc_deriv, Point(200, 200), 7, cc_deriv);
+
+    imshow("source", source);
+    imshow("chain code derivation", dest_cc_deriv);
+}
+
+void lab6_chain_reconstruction(char *fileName) {
+    Mat dest_some_object = Mat::zeros(600, 800, CV_8UC3);
+    std::vector<int> object_cc;
+    for (int i=0; i<sizeof(some_object)/sizeof(int); i++) {
+        object_cc.push_back(some_object[i]);
+    }
+    display_chain_code(dest_some_object, Point(160, 160), object_cc);
+
+    imshow("reconstructed", dest_some_object);
 }

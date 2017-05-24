@@ -209,10 +209,6 @@ Mat boundary_extraction(Mat source) {
 }
 
 Mat region_filling(Mat source, int row, int col) {
-    uchar nucleus_data[] = {0,1,0, 1,1,1, 0,1,0};
-    Mat nucleus(3, 3, CV_8UC1);
-    nucleus.data = &nucleus_data[0];
-
     Mat complement = object_complement(source);
     Mat prev(source.rows, source.cols, CV_8UC1);
     for (int i=0; i<prev.rows; i++) {
@@ -242,7 +238,6 @@ void lab7_dilation(char *fileName) {
 void lab7_erosion(char *fileName) {
     Mat source = imread(fileName, CV_8UC1);
     Mat nucleus = initialize_filter(3, 1,1,1, 1,1,1, 1,1,1);
-    Mat dilated = morph(source, nucleus, OPERATION_DILATION);
     Mat eroded = morph(source, nucleus, OPERATION_EROSION);
 
     imshow("source", source);
