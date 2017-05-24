@@ -138,7 +138,6 @@ void extend_from_point(Mat edges, Point p) {
     }
     while (queue.size() > 0) {
         Point currentPoint = queue.front();
-//        printf("working on point %d,%d\n", currentPoint.x, currentPoint.y);
         queue.pop();
         for (int k=0; k<8; k++) {
             int xx = currentPoint.x + neighbor_dy[k];
@@ -163,8 +162,6 @@ Mat compute_with_edge_extension(Mat edge_types) {
                         int xx = j+neighbor_dx[k];
                         int yy = i+neighbor_dy[k];
                         if (destination.at<unsigned char>(yy, xx) == COLOR_SOFT_EDGE) {
-//                            printf("found hard edge next to soft edge: %d,%d - %d,%d\n",
-//                                   j, i, xx, yy);
                             extend_from_point(destination, Point(j, i));
                             changed = true;
                             break;
@@ -233,7 +230,6 @@ void lab11_gradient_magnitude(char *fileName) {
 
     imshow("source", source);
     imshow("gradient magnitude", vectors.magnitude);
-    // display_float_data("gradient direction", vectors.direction);
     imshow("gradient direction", colorize_gradient_direction(vectors.direction));
 }
 
@@ -265,8 +261,6 @@ void lab11_canny_edge_detection(char *fileName) {
     Mat extended_edges = compute_with_edge_extension(edge_types);
 
     imshow("source", source);
-//    imshow("sobel horizontal", horizontal);
-//    imshow("sobel vertical", vertical);
     imshow("non maxima", non_maxima);
     imshow("edge types", edge_types);
     imshow("extended edges", extended_edges);
