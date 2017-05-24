@@ -194,6 +194,7 @@ QList<Lab*> initialize_labs() {
          ->addTask(new Task("gradient magnitude", &lab11_gradient_magnitude))
          ->addTask(new Task("gradient thresholding", &lab11_gradient_thresholding))
          ->addTask(new Task("canny edge detection", &lab11_canny_edge_detection))
+         ->addFilesDir(".")
          ->addFilesDir("lab10")
     );
 

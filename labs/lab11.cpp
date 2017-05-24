@@ -1,3 +1,4 @@
+#include <queue>
 #include "../project.h"
 
 #define PI 3.14159265
@@ -82,7 +83,7 @@ Mat non_maxima_suppression(GradientVectors vectors) {
             int mm = vectors.magnitude.at<unsigned char>(ii, jj);
             int mm2 = vectors.magnitude.at<unsigned char>(ii2, jj2);
 
-            if (mag > mm && mag > mm2) {
+            if (mag >= mm && mag >= mm2) {
                 destination.at<unsigned char>(i, j) = mag;
             } else {
                 destination.at<unsigned char>(i, j) = 0;
@@ -121,8 +122,69 @@ Mat compute_edge_types(Mat edges, float p, float k) {
     return destination;
 }
 
-Mat compute_with_edge_extension(Mat edge_types) {
 
+int neighbor_dx[] = {-1,0,1,1,1,0,-1,-1};
+int neighbor_dy[] = {1,1,1,0,-1,-1,-1,0};
+
+void extend_from_point(Mat edges, Point p) {
+    std::queue<Point> queue;
+    for (int k=0; k<8; k++) {
+        int xx = p.x + neighbor_dx[k];
+        int yy = p.y + neighbor_dy[k];
+        if (edges.at<unsigned char>(yy, xx) == COLOR_SOFT_EDGE) {
+            edges.at<unsigned char>(yy, xx) = COLOR_HARD_EDGE;
+            queue.push(Point(xx, yy));
+        }
+    }
+    while (queue.size() > 0) {
+        Point currentPoint = queue.front();
+//        printf("working on point %d,%d\n", currentPoint.x, currentPoint.y);
+        queue.pop();
+        for (int k=0; k<8; k++) {
+            int xx = currentPoint.x + neighbor_dy[k];
+            int yy = currentPoint.y + neighbor_dx[k];
+            if (edges.at<unsigned char>(yy, xx) == COLOR_SOFT_EDGE) {
+                edges.at<unsigned char>(yy, xx) = COLOR_HARD_EDGE;
+                queue.push(Point(xx, yy));
+            }
+        }
+    }
+}
+
+Mat compute_with_edge_extension(Mat edge_types) {
+    Mat destination = edge_types.clone();
+
+    for (;;) {
+        bool changed = false;
+        for (int i=1; i<destination.rows-1; i++) {
+            for (int j=1; j<destination.cols-1; j++) {
+                if (destination.at<unsigned char>(i, j) == COLOR_HARD_EDGE) {
+                    for (int k=0; k<8; k++) {
+                        int xx = j+neighbor_dx[k];
+                        int yy = i+neighbor_dy[k];
+                        if (destination.at<unsigned char>(yy, xx) == COLOR_SOFT_EDGE) {
+//                            printf("found hard edge next to soft edge: %d,%d - %d,%d\n",
+//                                   j, i, xx, yy);
+                            extend_from_point(destination, Point(j, i));
+                            changed = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        if (!changed) {
+            break;
+        }
+    }
+    for (int i=0; i<destination.rows; i++) {
+        for (int j=0; j<destination.cols; j++) {
+            if (destination.at<unsigned char>(i, j) == COLOR_SOFT_EDGE) {
+                destination.at<unsigned char>(i, j) = COLOR_NO_EDGE;
+            }
+        }
+    }
+    return destination;
 }
 
 void lab11_gradient_prewitt(char *fileName) {
@@ -199,11 +261,13 @@ void lab11_canny_edge_detection(char *fileName) {
     Mat vertical = apply_convolution_filter(source, vertical_filter);
     GradientVectors vectors = compute_gradient(horizontal, vertical);
     Mat non_maxima = non_maxima_suppression(vectors);
-    Mat edge_types = compute_edge_types(non_maxima, 0.2, 0.4);
+    Mat edge_types = compute_edge_types(non_maxima, 0.2, 0.7);
+    Mat extended_edges = compute_with_edge_extension(edge_types);
 
     imshow("source", source);
 //    imshow("sobel horizontal", horizontal);
 //    imshow("sobel vertical", vertical);
     imshow("non maxima", non_maxima);
     imshow("edge types", edge_types);
+    imshow("extended edges", extended_edges);
 }
