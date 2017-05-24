@@ -231,21 +231,17 @@ void objectClickCallback(int event, int x, int y, int flags, void* param) {
     }
 }
 
-void processObjects() {
-    char fname[MAX_PATH];
-    while (openFileDlg(fname)) {
-        Mat source = imread(fname, CV_LOAD_IMAGE_COLOR);
+void lab4_something(char *fname) {
 
-        namedWindow("source");
-        setMouseCallback("source", objectClickCallback, &source);
-        imshow("source", source);
-
-        filterAndShowObjects(source);
-
-        waitKey();
-    }
 }
 
-void lab4() {
-    processObjects();
+void lab4_process_objects(char *fname) {
+    Mat *source = new Mat();
+    *source = cvLoadImage(fname, CV_LOAD_IMAGE_COLOR);
+
+    namedWindow("source");
+    setMouseCallback("source", objectClickCallback, source);
+    imshow("source", *source);
+
+    filterAndShowObjects(*source);
 }

@@ -3,6 +3,6 @@
 
 #include "../project.h"
 
-void lab4();
+void lab4_process_objects(char *fname);
 
 #endif//LAB4_H

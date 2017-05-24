@@ -154,6 +154,10 @@ void LabApp::execute_task(Task *task, File *file) {
 
 QList<Lab*> initialize_labs() {
     QList<Lab*> result;
+    result.push_back((new Lab("Lab 4"))
+         ->addTask((new Task("Process objects", &lab4_process_objects))
+                   ->addFilesDir("lab4/Obiecte multiple"))
+    );
     result.push_back((new Lab("Lab 5"))
          ->addTask(new Task("Breadth First Search", &lab5_bfs))
          ->addTask(new Task("Multipass", &lab5_multipass))
